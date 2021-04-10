@@ -19,6 +19,7 @@ type Resource interface {
 func New(config *config.Config, jarRepo jar.Repo) Resource {
 	return &resource{
 		config: config,
+		jar:    jarRepo,
 	}
 }
 

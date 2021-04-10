@@ -24,14 +24,15 @@ type IOTHub struct {
 	jarDBRepo       jar.Repo
 }
 
-func New(db jar.Repo) Resource {
+func New(db jar.Repo) (Resource, error) {
 	iotHub := &IOTHub{
 		JarStateUpdater: make(chan *State),
 		jarDBRepo:       db,
 	}
 	receiver := new(StateReceiver)
 	iotHub.mqtt = InitializeMqTT(receiver.stateHandler(iotHub.JarStateUpdater))
-	return iotHub
+	err := iotHub.SubscribeToJarStateTopic()
+	return iotHub, err
 }
 
 func (hub *IOTHub) SubscribeToJarStateTopic() error {
@@ -50,10 +51,14 @@ func (hub *IOTHub) Run() {
 			jarState := make(map[string]entity.JarState)
 			err := json.Unmarshal(state.Payload, &jarState)
 			if err != nil {
-				log.Println("[Run] error occurred in unmarshalling jar payload")
+				log.Println("[Run] error occurred in unmarshalling jar payload :", err)
 				return
 			}
-			hub.jarDBRepo.InsertJarStateData(jarState)
+			err = hub.jarDBRepo.InsertJarStateData(jarState)
+			if err != nil {
+				log.Println("[Run] error occurred in inserting jar stat to database :", err)
+				return
+			}
 		}
 	}
 }

@@ -29,7 +29,10 @@ func main() {
 
 	jarRepo := jar.New(dbResource)
 
-	iotHub := iot.New(jarRepo)
+	iotHub, err := iot.New(jarRepo)
+	if err != nil {
+		log.Fatal("[Main] Fatal initializing iotHub :", err, " env :", os.Getenv("XEYNSEENV"))
+	}
 	go iotHub.Run()
 
 	jarUseCase := jarUseCase.New(config, jarRepo)

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"strings"
-	"time"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/xeynse/XeynseJar_analytics/internal/entity"
@@ -41,12 +40,13 @@ func New(dbRes db.Resource) Repo {
 func (r *resource) InsertJarStateData(state map[string]entity.JarState) error {
 	dbValues := make([]string, 0)
 	for key, value := range state {
-		valueString := fmt.Sprintf(" (%v,%v,%v,%v,%v,%v,%v,%v,%v) ", value.HomeID, key, value.WeightStart, value.WeightDiff, value.WeightCurrent, value.ZAxisG, value.Error, value.Type, time.Now().UTC())
+		valueString := fmt.Sprintf(` ('%v','%v',%v,%v,%v,%v,%v,'%v', now()) `, value.HomeID, key, value.WeightStart, value.WeightDiff, value.WeightCurrent, value.ZAxisG, value.Error, value.Type)
 		dbValues = append(dbValues, valueString)
 	}
 
 	dbValueString := strings.Join(dbValues, ", ")
 	query := fmt.Sprintf("%v%v", queryInsertJarStatusData, dbValueString)
+	log.Println(query)
 	_, err := r.dbResource.GetClient().Exec(query)
 	return err
 }
