@@ -2,9 +2,7 @@ package iot
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
-	"sync"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/xeynse/XeynseJar_analytics/internal/entity"
@@ -17,11 +15,10 @@ type Resource interface {
 }
 
 const (
-	JarSubscribeTopic = "xeynse/jar/status"
+	JarSubscribeTopic = "xeynse/smarJar/analytics/stats"
 )
 
 type IOTHub struct {
-	mutex           sync.RWMutex
 	mqtt            mqtt.Client
 	JarStateUpdater chan *State
 	jarDBRepo       jar.Repo
@@ -39,7 +36,7 @@ func New(db jar.Repo) Resource {
 
 func (hub *IOTHub) SubscribeToJarStateTopic() error {
 	//TODO set mqtt wait timeout
-	if token := hub.mqtt.Subscribe(fmt.Sprintf(JarSubscribeTopic), 0, nil); token.Wait() && token.Error() != nil {
+	if token := hub.mqtt.Subscribe(JarSubscribeTopic, 0, nil); token.Wait() && token.Error() != nil {
 		log.Printf("failed to create subscription for: %v, %v\n", JarSubscribeTopic, token.Error())
 		return token.Error()
 	}
