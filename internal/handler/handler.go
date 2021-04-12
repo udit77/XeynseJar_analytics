@@ -2,10 +2,10 @@ package handler
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/monoculum/formam"
 	"github.com/xeynse/XeynseJar_analytics/internal/entity"
 	"github.com/xeynse/XeynseJar_analytics/internal/usecase/jar"
 	errUtil "github.com/xeynse/XeynseJar_analytics/internal/util/error"
@@ -34,27 +34,27 @@ func httpHandler(h httprouter.Handle) httprouter.Handle {
 
 func (h handler) fetchAllJarStats(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	w.Header().Set("Content-Type", "application/json")
-	err := r.ParseForm()
+	requestBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		utilErr := errUtil.BadError("", "error reading request body: "+err.Error())
+		utilErr := errUtil.BadError("", "error reading create mode request body: "+err.Error())
 		response := entity.Response{Status: utilErr.HttpCode, Success: false, Message: "Fail", Error: utilErr}
 		responseBytes, _ := json.Marshal(response)
 		w.WriteHeader(utilErr.HttpCode)
 		w.Write(responseBytes)
 		return
-	}
 
+	}
 	statusRequest := &entity.AllJarStatusRequest{}
-	dec := formam.NewDecoder(&formam.DecoderOptions{TagName: "json", IgnoreUnknownKeys: true})
-	if err := dec.Decode(r.Form, statusRequest); err != nil {
-		utilErr := errUtil.BadError("", "error decoding create home request")
+	err = json.Unmarshal(requestBody, &statusRequest)
+	if err != nil {
+		utilErr := errUtil.BadError("", "error unmarshalling create mode request body")
 		response := entity.Response{Status: utilErr.HttpCode, Success: false, Message: "Fail", Error: utilErr}
 		responseBytes, _ := json.Marshal(response)
 		w.WriteHeader(utilErr.HttpCode)
 		w.Write(responseBytes)
 		return
-
 	}
+
 	if statusRequest.HomeID == "" {
 		utilErr := errUtil.BadError("", "home ID cannot be empty")
 		response := entity.Response{Status: utilErr.HttpCode, Success: false, Message: "Fail", Error: utilErr}
@@ -99,27 +99,27 @@ func (h handler) fetchAllJarStats(w http.ResponseWriter, r *http.Request, ps htt
 
 func (h handler) fetchJarStatsByJarID(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	w.Header().Set("Content-Type", "application/json")
-	err := r.ParseForm()
+	requestBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		utilErr := errUtil.BadError("", "error reading request body: "+err.Error())
+		utilErr := errUtil.BadError("", "error reading create mode request body: "+err.Error())
 		response := entity.Response{Status: utilErr.HttpCode, Success: false, Message: "Fail", Error: utilErr}
 		responseBytes, _ := json.Marshal(response)
 		w.WriteHeader(utilErr.HttpCode)
 		w.Write(responseBytes)
 		return
-	}
 
+	}
 	statusRequest := &entity.JarStatusRequest{}
-	dec := formam.NewDecoder(&formam.DecoderOptions{TagName: "json", IgnoreUnknownKeys: true})
-	if err := dec.Decode(r.Form, statusRequest); err != nil {
-		utilErr := errUtil.BadError("", "error decoding create home request")
+	err = json.Unmarshal(requestBody, &statusRequest)
+	if err != nil {
+		utilErr := errUtil.BadError("", "error unmarshalling create mode request body")
 		response := entity.Response{Status: utilErr.HttpCode, Success: false, Message: "Fail", Error: utilErr}
 		responseBytes, _ := json.Marshal(response)
 		w.WriteHeader(utilErr.HttpCode)
 		w.Write(responseBytes)
 		return
-
 	}
+
 	if statusRequest.HomeID == "" {
 		utilErr := errUtil.BadError("", "home ID cannot be empty")
 		response := entity.Response{Status: utilErr.HttpCode, Success: false, Message: "Fail", Error: utilErr}
@@ -173,27 +173,27 @@ func (h handler) fetchJarStatsByJarID(w http.ResponseWriter, r *http.Request, ps
 
 func (h handler) getCaloriesConsumptiion(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	w.Header().Set("Content-Type", "application/json")
-	err := r.ParseForm()
+	requestBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		utilErr := errUtil.BadError("", "error reading request body: "+err.Error())
+		utilErr := errUtil.BadError("", "error reading create mode request body: "+err.Error())
 		response := entity.Response{Status: utilErr.HttpCode, Success: false, Message: "Fail", Error: utilErr}
 		responseBytes, _ := json.Marshal(response)
 		w.WriteHeader(utilErr.HttpCode)
 		w.Write(responseBytes)
 		return
-	}
 
+	}
 	statusRequest := &entity.ConsumptionRequest{}
-	dec := formam.NewDecoder(&formam.DecoderOptions{TagName: "json", IgnoreUnknownKeys: true})
-	if err := dec.Decode(r.Form, statusRequest); err != nil {
-		utilErr := errUtil.BadError("", "error decoding create home request")
+	err = json.Unmarshal(requestBody, &statusRequest)
+	if err != nil {
+		utilErr := errUtil.BadError("", "error unmarshalling create mode request body")
 		response := entity.Response{Status: utilErr.HttpCode, Success: false, Message: "Fail", Error: utilErr}
 		responseBytes, _ := json.Marshal(response)
 		w.WriteHeader(utilErr.HttpCode)
 		w.Write(responseBytes)
 		return
-
 	}
+
 	if statusRequest.HomeID == "" {
 		utilErr := errUtil.BadError("", "home ID cannot be empty")
 		response := entity.Response{Status: utilErr.HttpCode, Success: false, Message: "Fail", Error: utilErr}
