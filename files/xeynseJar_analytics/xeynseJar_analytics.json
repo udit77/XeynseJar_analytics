@@ -1,0 +1,25 @@
+{
+  "server": {
+    "address": "0.0.0.0:9000"
+  },
+  "db" : {
+      "xeynse_jar" : {
+          "jar_status": {
+            "table": "transactions_jar_status",
+            "host": "xeynsedb.cnxgqr41cdpw.ap-south-1.rds.amazonaws.com",
+            "userName": "postgres",
+            "password": "ratedr1122",
+            "name": "postgres"
+          }
+      }
+  },
+  "mqtt":{
+    "broker":"tls://a1fuaadtbvbtj1-ats.iot.ap-south-1.amazonaws.com:8883",
+    "clientID":"xeynse"
+  },
+  "certs":{
+    "root":"internal/iot/AmazonRootCA1.pem",
+    "cert":"internal/iot/f2fbf9d1e9-certificate.pem.crt",
+    "private":"internal/iot/f2fbf9d1e9-private.pem.key"
+  }
+}

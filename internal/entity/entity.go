@@ -10,6 +10,42 @@ type Response struct {
 	Error   *error.Error `json:"error"`
 }
 
+type AllJarStatusRequest struct {
+	HomeID string `json:"homeID"`
+}
+
+type JarStatusRequest struct {
+	HomeID string `json:"homeID"`
+	JarID  string `json:"jarID"`
+}
+
+type ConsumptionRequest struct {
+	HomeID  string `json:"homeID"`
+	JarID   string `json:"jarID"`
+	Context string `json:"context"`
+}
+
+type JarConsumption struct {
+	TotalConsumption float64     `json:"total_consumption"`
+	Data             interface{} `json:"data"`
+}
+
+type ConsumptionForday struct {
+	Hour  int     `json:"hour"`
+	Value float64 `json:"value"`
+}
+
+type ConsumptionForWeek struct {
+	Date  string  `json:"date"`
+	Day   string  `json:"day"`
+	Value float64 `json:"value"`
+}
+
+type ConsumptionForMonth struct {
+	Date  string  `json:"date"`
+	Value float64 `json:"value"`
+}
+
 type JarState struct {
 	HomeID        string  `json:"home_id"`
 	WeightStart   float64 `json:"w_start"`

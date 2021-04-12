@@ -9,6 +9,7 @@ import (
 	"github.com/xeynse/XeynseJar_analytics/internal/entity"
 	analyticsentity "github.com/xeynse/XeynseJar_analytics/internal/entity/analytics"
 	"github.com/xeynse/XeynseJar_analytics/internal/resource/db"
+	"github.com/xeynse/XeynseJar_analytics/internal/util/common"
 )
 
 type resource struct {
@@ -19,12 +20,16 @@ type resource struct {
 type sqlStatement struct {
 	fetchWeightStatByHomeID *sqlx.Stmt
 	fetchWeightStatByJarID  *sqlx.Stmt
+	fetchConsumption        *sqlx.Stmt
 }
 
 type Repo interface {
 	InsertJarStateData(map[string]entity.JarState) error
 	GetAllJarStats(homeID string) ([]*analyticsentity.CurrentWeightStatus, error)
 	GetJarStatByJarID(homeID string, jarID string) (*analyticsentity.CurrentWeightStatus, error)
+	GetCalorieConsumptionForDay(homeID string, jarID string) ([]*analyticsentity.Consumption, error)
+	GetCalorieConsumptionForWeek(homeID string, jarID string) ([]*analyticsentity.Consumption, error)
+	GetCalorieConsumptionForMonth(homeID string, jarID string) ([]*analyticsentity.Consumption, error)
 }
 
 func New(dbRes db.Resource) Repo {
@@ -33,6 +38,7 @@ func New(dbRes db.Resource) Repo {
 		statements: sqlStatement{
 			fetchWeightStatByHomeID: dbRes.PreparexFatal(queryCurrentWeightByHomeID),
 			fetchWeightStatByJarID:  dbRes.PreparexFatal(queryCurrentWeightByJarID),
+			fetchConsumption:        dbRes.PreparexFatal(queryFetchConsumption),
 		},
 	}
 }
@@ -75,6 +81,63 @@ func (r *resource) GetJarStatByJarID(homeID string, jarID string) (*analyticsent
 	err := r.statements.fetchWeightStatByJarID.QueryRowx(homeID, jarID).StructScan(response)
 	if err != nil {
 		return response, err
+	}
+	return response, nil
+}
+
+func (r *resource) GetCalorieConsumptionForDay(homeID string, jarID string) ([]*analyticsentity.Consumption, error) {
+	response := make([]*analyticsentity.Consumption, 0)
+	rows, err := r.statements.fetchConsumption.Queryx(homeID, jarID, common.GetTodayTimeStringByLocation())
+	if err != nil {
+		return response, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		analytics := &analyticsentity.Consumption{}
+		err := rows.StructScan(analytics)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		response = append(response, analytics)
+	}
+	return response, nil
+}
+
+func (r *resource) GetCalorieConsumptionForWeek(homeID string, jarID string) ([]*analyticsentity.Consumption, error) {
+	response := make([]*analyticsentity.Consumption, 0)
+	rows, err := r.statements.fetchConsumption.Queryx(homeID, jarID, common.GetWeekTimeStringByLocation())
+	if err != nil {
+		return response, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		analytics := &analyticsentity.Consumption{}
+		err := rows.StructScan(analytics)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		response = append(response, analytics)
+	}
+	return response, nil
+}
+
+func (r *resource) GetCalorieConsumptionForMonth(homeID string, jarID string) ([]*analyticsentity.Consumption, error) {
+	response := make([]*analyticsentity.Consumption, 0)
+	rows, err := r.statements.fetchConsumption.Queryx(homeID, jarID, common.GetMonthTimeStringByLocation())
+	if err != nil {
+		return response, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		analytics := &analyticsentity.Consumption{}
+		err := rows.StructScan(analytics)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		response = append(response, analytics)
 	}
 	return response, nil
 }
