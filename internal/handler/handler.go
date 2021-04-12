@@ -36,7 +36,7 @@ func (h handler) fetchAllJarStats(w http.ResponseWriter, r *http.Request, ps htt
 	w.Header().Set("Content-Type", "application/json")
 	requestBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		utilErr := errUtil.BadError("", "error reading create mode request body: "+err.Error())
+		utilErr := errUtil.BadError("", "error unmarshalling all jar stats request body: "+err.Error())
 		response := entity.Response{Status: utilErr.HttpCode, Success: false, Message: "Fail", Error: utilErr}
 		responseBytes, _ := json.Marshal(response)
 		w.WriteHeader(utilErr.HttpCode)
@@ -101,7 +101,7 @@ func (h handler) fetchJarStatsByJarID(w http.ResponseWriter, r *http.Request, ps
 	w.Header().Set("Content-Type", "application/json")
 	requestBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		utilErr := errUtil.BadError("", "error reading create mode request body: "+err.Error())
+		utilErr := errUtil.BadError("", "error reading jar stats request body: "+err.Error())
 		response := entity.Response{Status: utilErr.HttpCode, Success: false, Message: "Fail", Error: utilErr}
 		responseBytes, _ := json.Marshal(response)
 		w.WriteHeader(utilErr.HttpCode)
@@ -181,7 +181,6 @@ func (h handler) getCaloriesConsumptiion(w http.ResponseWriter, r *http.Request,
 		w.WriteHeader(utilErr.HttpCode)
 		w.Write(responseBytes)
 		return
-
 	}
 	statusRequest := &entity.ConsumptionRequest{}
 	err = json.Unmarshal(requestBody, &statusRequest)
