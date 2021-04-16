@@ -24,6 +24,15 @@ type IOTHub struct {
 	jarDBRepo       jar.Repo
 }
 
+type IotShadowState struct {
+	ShadowState *ShadowState `json:"state"`
+}
+
+type ShadowState struct {
+	Desired  map[string]interface{}         `json:"desired,omitempty"`
+	Reported map[string]*entity.JarReported `json:"reported,omitempty"`
+}
+
 func New(db jar.Repo) (Resource, error) {
 	iotHub := &IOTHub{
 		JarStateUpdater: make(chan *State),
@@ -48,12 +57,14 @@ func (hub *IOTHub) Run() {
 	for {
 		select {
 		case state := <-hub.JarStateUpdater:
-			jarState := make(map[string]entity.JarState)
+			log.Println(string(state.Payload))
+			jarState := make(map[string]*entity.JarReported)
 			err := json.Unmarshal(state.Payload, &jarState)
 			if err != nil {
 				log.Println("[Run] error occurred in unmarshalling jar payload :", err)
 				return
 			}
+			log.Printf("[Run] Jar state %+v\n", jarState)
 			err = hub.jarDBRepo.InsertJarStateData(jarState)
 			if err != nil {
 				log.Println("[Run] error occurred in inserting jar stat to database :", err)

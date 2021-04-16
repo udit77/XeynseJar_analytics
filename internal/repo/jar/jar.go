@@ -1,6 +1,7 @@
 package jar
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"strings"
@@ -24,7 +25,7 @@ type sqlStatement struct {
 }
 
 type Repo interface {
-	InsertJarStateData(map[string]entity.JarState) error
+	InsertJarStateData(map[string]*entity.JarReported) error
 	GetAllJarStats(homeID string) ([]*analyticsentity.CurrentWeightStatus, error)
 	GetJarStatByJarID(homeID string, jarID string) (*analyticsentity.CurrentWeightStatus, error)
 	GetCalorieConsumptionForDay(homeID string, jarID string) ([]*analyticsentity.Consumption, error)
@@ -43,9 +44,13 @@ func New(dbRes db.Resource) Repo {
 	}
 }
 
-func (r *resource) InsertJarStateData(state map[string]entity.JarState) error {
+func (r *resource) InsertJarStateData(jarState map[string]*entity.JarReported) error {
+	if jarState == nil {
+		return errors.New("[InsertJarStatus] empty jar state")
+	}
 	dbValues := make([]string, 0)
-	for key, value := range state {
+	for key, jarValue := range jarState {
+		value := jarValue.Nodes.Node0
 		valueString := fmt.Sprintf(` ('%v','%v',%v,%v,%v,%v,%v,'%v', now()) `, value.HomeID, key, value.WeightStart, value.WeightDiff, value.WeightCurrent, value.ZAxisG, value.Error, value.Type)
 		dbValues = append(dbValues, valueString)
 	}

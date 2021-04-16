@@ -46,10 +46,19 @@ type ConsumptionForMonth struct {
 	Value float64 `json:"value"`
 }
 
+type JarReported struct {
+	Nodes JarNodes `json:"nodes"`
+}
+
+type JarNodes struct {
+	Node0 JarState `json:"0"`
+}
+
 type JarState struct {
 	HomeID        string  `json:"home_id"`
+	Ver           string  `json:"ver"`
 	WeightStart   float64 `json:"w_start"`
-	WeightDiff    float64 `json:"w_diff"`
+	WeightDiff    float64 `json:"usedAmount"`
 	WeightCurrent float64 `json:"w_curr"`
 	ZAxisG        float64 `json:"zAxis_g"`
 	Error         float64 `json:"jar_error"`

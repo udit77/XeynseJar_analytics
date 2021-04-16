@@ -1,7 +1,9 @@
 package iot
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
@@ -14,8 +16,20 @@ type State struct {
 
 func (r *StateReceiver) stateHandler(stateChan chan<- *State) mqtt.MessageHandler {
 	return func(client mqtt.Client, msg mqtt.Message) {
-		r.broadCastState(stateChan, msg.Payload())
-		fmt.Printf("TOPIC: %s\n", msg.Topic())
+		iotShadowState := new(IotShadowState)
+		err := json.Unmarshal(msg.Payload(), iotShadowState)
+		if err != nil {
+			log.Println("[shadowHandler] error occurred in unmarshalling shadow payload", err)
+			return
+		}
+		if iotShadowState.ShadowState != nil && iotShadowState.ShadowState.Reported != nil {
+			stateUpdate, err := json.Marshal(iotShadowState.ShadowState.Reported)
+			if err != nil {
+				log.Println("[shadowHandler] error occurred in marshalling reported shadow payload")
+				return
+			}
+			go r.broadCastState(stateChan, stateUpdate)
+		}
 		fmt.Printf("MSG: %s\n", msg.Payload())
 	}
 }
