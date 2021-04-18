@@ -1,6 +1,9 @@
 package entity
 
-import "github.com/xeynse/XeynseJar_analytics/internal/util/error"
+import (
+	"github.com/xeynse/XeynseJar_analytics/internal/entity/home"
+	"github.com/xeynse/XeynseJar_analytics/internal/util/error"
+)
 
 type Response struct {
 	Data    interface{}  `json:"data"`
@@ -63,4 +66,9 @@ type JarState struct {
 	ZAxisG        float64 `json:"zAxis_g"`
 	Error         float64 `json:"jar_error"`
 	Type          string  `json:"type"`
+}
+
+type HomeConfigurationResponse struct {
+	HomeID        string             `json:"homeID"`
+	Configuration home.Configuration `json:"configuration"`
 }

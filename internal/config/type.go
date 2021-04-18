@@ -12,7 +12,12 @@ type Server struct {
 }
 
 type DataBase struct {
-	XeynsJar XeynseJar `json:"xeynse_jar"`
+	XeynsJar          XeynseJar           `json:"xeynse_jar"`
+	HomeConfiguration HomeConfigurationDB `json:"homeConfiguration"`
+}
+
+type HomeConfigurationDB struct {
+	Table string `json:"table"`
 }
 
 type XeynseJar struct {

@@ -2,13 +2,16 @@ package jar
 
 import (
 	"errors"
+	"fmt"
 	"sort"
 	"time"
 
 	"github.com/xeynse/XeynseJar_analytics/internal/config"
 	"github.com/xeynse/XeynseJar_analytics/internal/entity"
 	analyticsentity "github.com/xeynse/XeynseJar_analytics/internal/entity/analytics"
+	"github.com/xeynse/XeynseJar_analytics/internal/repo/home"
 	"github.com/xeynse/XeynseJar_analytics/internal/repo/jar"
+
 	"github.com/xeynse/XeynseJar_analytics/internal/util/common"
 )
 
@@ -18,9 +21,12 @@ const (
 	ContextMonth = "MONTH"
 )
 
+var WeekDay = [7]string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}
+
 type resource struct {
-	config *config.Config
-	jar    jar.Repo
+	config     *config.Config
+	jar        jar.Repo
+	homeconfig home.Resource
 }
 
 type Resource interface {
@@ -29,10 +35,11 @@ type Resource interface {
 	GetJarCalorieConsumption(status *entity.ConsumptionRequest) (*entity.JarConsumption, error)
 }
 
-func New(config *config.Config, jarRepo jar.Repo) Resource {
+func New(config *config.Config, homeconfigRepo home.Resource, jarRepo jar.Repo) Resource {
 	return &resource{
-		config: config,
-		jar:    jarRepo,
+		config:     config,
+		jar:        jarRepo,
+		homeconfig: homeconfigRepo,
 	}
 }
 
@@ -107,6 +114,18 @@ func (r *resource) GetCalorieConsumptionForDay(status *entity.ConsumptionRequest
 func (r *resource) GetCalorieConsumptionForWeek(status *entity.ConsumptionRequest) (*entity.JarConsumption, error) {
 	var totalWeekConsumption float64 = 0
 	weekDayWiseConsumption := make(map[string]float64)
+
+	t1 := time.Now()
+	weekDay := int(t1.Weekday())
+	val := t1.Day() - (weekDay - 1)
+	if weekDay == 0 {
+		val = t1.Day() - 6
+	}
+	for i := t1.Day(); i >= val; i-- {
+		date := time.Now().AddDate(0, 0, -1*(i-val)).Format("2006-01-02")
+		weekDayWiseConsumption[date] = 0
+	}
+
 	consumption, err := r.jar.GetCalorieConsumptionForWeek(status.HomeID, status.JarID)
 	if err != nil {
 		return nil, err
@@ -142,8 +161,16 @@ func (r *resource) GetCalorieConsumptionForWeek(status *entity.ConsumptionReques
 }
 
 func (r *resource) GetCalorieConsumptionForMonth(status *entity.ConsumptionRequest) (*entity.JarConsumption, error) {
+	dateToday := time.Now().Day()
 	var totalMonthConsumption float64 = 0
 	dayWiseMonthlyConsumption := make(map[string]float64)
+
+	for i := dateToday - 1; i >= 0; i-- {
+		date := time.Now().AddDate(0, 0, -1*i).Format("2006-01-02")
+		fmt.Println(date)
+		dayWiseMonthlyConsumption[date] = 0
+	}
+
 	consumption, err := r.jar.GetCalorieConsumptionForMonth(status.HomeID, status.JarID)
 	if err != nil {
 		return nil, err

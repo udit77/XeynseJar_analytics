@@ -9,7 +9,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/xeynse/XeynseJar_analytics/internal/entity"
 	analyticsentity "github.com/xeynse/XeynseJar_analytics/internal/entity/analytics"
-	"github.com/xeynse/XeynseJar_analytics/internal/resource/db"
+	db "github.com/xeynse/XeynseJar_analytics/internal/resource/db/analytics"
 	"github.com/xeynse/XeynseJar_analytics/internal/util/common"
 )
 

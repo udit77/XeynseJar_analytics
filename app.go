@@ -9,8 +9,10 @@ import (
 	"github.com/xeynse/XeynseJar_analytics/internal/config"
 	"github.com/xeynse/XeynseJar_analytics/internal/handler"
 	"github.com/xeynse/XeynseJar_analytics/internal/iot"
+	"github.com/xeynse/XeynseJar_analytics/internal/repo/home"
 	"github.com/xeynse/XeynseJar_analytics/internal/repo/jar"
-	"github.com/xeynse/XeynseJar_analytics/internal/resource/db"
+	dbanalytics "github.com/xeynse/XeynseJar_analytics/internal/resource/db/analytics"
+	dbhomeconfig "github.com/xeynse/XeynseJar_analytics/internal/resource/db/homeconfig"
 	"github.com/xeynse/XeynseJar_analytics/internal/resource/file"
 	jarUseCase "github.com/xeynse/XeynseJar_analytics/internal/usecase/jar"
 )
@@ -22,12 +24,14 @@ func main() {
 		log.Fatal("[Main] Fatal initializing config :", err, " env :", os.Getenv("XEYNSEENV"))
 	}
 
-	dbResource, err := db.New(config)
+	homeconfigDB := dbhomeconfig.New()
+
+	anaylticsDB, err := dbanalytics.New(config)
 	if err != nil {
 		log.Fatal("[Main] Fatal connecting database :", err)
 	}
 
-	jarRepo := jar.New(dbResource)
+	jarRepo := jar.New(anaylticsDB)
 
 	iotHub, err := iot.New(jarRepo)
 	if err != nil {
@@ -35,7 +39,8 @@ func main() {
 	}
 	go iotHub.Run()
 
-	jarUseCase := jarUseCase.New(config, jarRepo)
+	homeconfigRepo := home.New(config, homeconfigDB)
+	jarUseCase := jarUseCase.New(config, homeconfigRepo, jarRepo)
 
 	router := httprouter.New()
 	handler.New(router, jarUseCase)
