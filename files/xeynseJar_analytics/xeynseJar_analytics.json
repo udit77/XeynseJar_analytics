@@ -11,6 +11,12 @@
             "password": "ratedr1122",
             "name": "postgres"
           }
+      },
+      "homeConfiguration": {
+        "table": "home_configuration"
+      },
+      "products": {
+        "table": "products"
       }
   },
   "mqtt":{

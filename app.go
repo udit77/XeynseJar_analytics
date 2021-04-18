@@ -11,8 +11,9 @@ import (
 	"github.com/xeynse/XeynseJar_analytics/internal/iot"
 	"github.com/xeynse/XeynseJar_analytics/internal/repo/home"
 	"github.com/xeynse/XeynseJar_analytics/internal/repo/jar"
+	"github.com/xeynse/XeynseJar_analytics/internal/repo/product"
 	dbanalytics "github.com/xeynse/XeynseJar_analytics/internal/resource/db/analytics"
-	dbhomeconfig "github.com/xeynse/XeynseJar_analytics/internal/resource/db/homeconfig"
+	dbDynamo "github.com/xeynse/XeynseJar_analytics/internal/resource/db/dynamo"
 	"github.com/xeynse/XeynseJar_analytics/internal/resource/file"
 	jarUseCase "github.com/xeynse/XeynseJar_analytics/internal/usecase/jar"
 )
@@ -24,13 +25,14 @@ func main() {
 		log.Fatal("[Main] Fatal initializing config :", err, " env :", os.Getenv("XEYNSEENV"))
 	}
 
-	homeconfigDB := dbhomeconfig.New()
+	dbDynamo := dbDynamo.New()
 
 	anaylticsDB, err := dbanalytics.New(config)
 	if err != nil {
 		log.Fatal("[Main] Fatal connecting database :", err)
 	}
 
+	productRepo := product.New(config, dbDynamo)
 	jarRepo := jar.New(anaylticsDB)
 
 	iotHub, err := iot.New(jarRepo)
@@ -39,8 +41,8 @@ func main() {
 	}
 	go iotHub.Run()
 
-	homeconfigRepo := home.New(config, homeconfigDB)
-	jarUseCase := jarUseCase.New(config, homeconfigRepo, jarRepo)
+	homeconfigRepo := home.New(config, dbDynamo)
+	jarUseCase := jarUseCase.New(config, homeconfigRepo, productRepo, jarRepo)
 
 	router := httprouter.New()
 	handler.New(router, jarUseCase)

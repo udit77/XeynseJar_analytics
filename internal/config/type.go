@@ -14,6 +14,7 @@ type Server struct {
 type DataBase struct {
 	XeynsJar          XeynseJar           `json:"xeynse_jar"`
 	HomeConfiguration HomeConfigurationDB `json:"homeConfiguration"`
+	Products          ProductsDB          `json:"products"`
 }
 
 type HomeConfigurationDB struct {
@@ -22,6 +23,10 @@ type HomeConfigurationDB struct {
 
 type XeynseJar struct {
 	JarStatus JarStatus `json:"jar_status"`
+}
+
+type ProductsDB struct {
+	Table string `json:"table"`
 }
 
 type JarStatus struct {

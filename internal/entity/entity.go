@@ -26,27 +26,32 @@ type ConsumptionRequest struct {
 	HomeID  string `json:"homeID"`
 	JarID   string `json:"jarID"`
 	Context string `json:"context"`
+	Type    string `json:"type"`
 }
 
 type JarConsumption struct {
 	TotalConsumption float64     `json:"total_consumption"`
+	Macro            *Macros     `json:"macro_nutirents,omitempty"`
 	Data             interface{} `json:"data"`
 }
 
 type ConsumptionForday struct {
-	Hour  int     `json:"hour"`
-	Value float64 `json:"value"`
+	Hour   int     `json:"hour"`
+	Value  float64 `json:"value"`
+	Macros *Macros `json:"macro_nutirents,omitempty"`
 }
 
 type ConsumptionForWeek struct {
-	Date  string  `json:"date"`
-	Day   string  `json:"day"`
-	Value float64 `json:"value"`
+	Date   string  `json:"date"`
+	Day    string  `json:"day"`
+	Value  float64 `json:"value"`
+	Macros *Macros `json:"macro_nutirents,omitempty"`
 }
 
 type ConsumptionForMonth struct {
-	Date  string  `json:"date"`
-	Value float64 `json:"value"`
+	Date   string  `json:"date"`
+	Value  float64 `json:"value"`
+	Macros *Macros `json:"macro_nutirents,omitempty"`
 }
 
 type JarReported struct {
@@ -71,4 +76,10 @@ type JarState struct {
 type HomeConfigurationResponse struct {
 	HomeID        string             `json:"homeID"`
 	Configuration home.Configuration `json:"configuration"`
+}
+
+type Macros struct {
+	Carbohydrates float64 `json:"carbohydrates"`
+	Protein       float64 `json:"protein"`
+	Fat           float64 `json:"fat"`
 }

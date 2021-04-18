@@ -28,9 +28,9 @@ type Repo interface {
 	InsertJarStateData(map[string]*entity.JarReported) error
 	GetAllJarStats(homeID string) ([]*analyticsentity.CurrentWeightStatus, error)
 	GetJarStatByJarID(homeID string, jarID string) (*analyticsentity.CurrentWeightStatus, error)
-	GetCalorieConsumptionForDay(homeID string, jarID string) ([]*analyticsentity.Consumption, error)
-	GetCalorieConsumptionForWeek(homeID string, jarID string) ([]*analyticsentity.Consumption, error)
-	GetCalorieConsumptionForMonth(homeID string, jarID string) ([]*analyticsentity.Consumption, error)
+	GetJarConsumptionForDay(homeID string, jarID string) ([]*analyticsentity.Consumption, error)
+	GetJarConsumptionForWeek(homeID string, jarID string) ([]*analyticsentity.Consumption, error)
+	GetJarConsumptionForMonth(homeID string, jarID string) ([]*analyticsentity.Consumption, error)
 }
 
 func New(dbRes db.Resource) Repo {
@@ -90,7 +90,7 @@ func (r *resource) GetJarStatByJarID(homeID string, jarID string) (*analyticsent
 	return response, nil
 }
 
-func (r *resource) GetCalorieConsumptionForDay(homeID string, jarID string) ([]*analyticsentity.Consumption, error) {
+func (r *resource) GetJarConsumptionForDay(homeID string, jarID string) ([]*analyticsentity.Consumption, error) {
 	response := make([]*analyticsentity.Consumption, 0)
 	rows, err := r.statements.fetchConsumption.Queryx(homeID, jarID, common.GetTodayTimeStringByLocation())
 	if err != nil {
@@ -109,7 +109,7 @@ func (r *resource) GetCalorieConsumptionForDay(homeID string, jarID string) ([]*
 	return response, nil
 }
 
-func (r *resource) GetCalorieConsumptionForWeek(homeID string, jarID string) ([]*analyticsentity.Consumption, error) {
+func (r *resource) GetJarConsumptionForWeek(homeID string, jarID string) ([]*analyticsentity.Consumption, error) {
 	response := make([]*analyticsentity.Consumption, 0)
 	rows, err := r.statements.fetchConsumption.Queryx(homeID, jarID, common.GetWeekTimeStringByLocation())
 	if err != nil {
@@ -128,7 +128,7 @@ func (r *resource) GetCalorieConsumptionForWeek(homeID string, jarID string) ([]
 	return response, nil
 }
 
-func (r *resource) GetCalorieConsumptionForMonth(homeID string, jarID string) ([]*analyticsentity.Consumption, error) {
+func (r *resource) GetJarConsumptionForMonth(homeID string, jarID string) ([]*analyticsentity.Consumption, error) {
 	response := make([]*analyticsentity.Consumption, 0)
 	rows, err := r.statements.fetchConsumption.Queryx(homeID, jarID, common.GetMonthTimeStringByLocation())
 	if err != nil {

@@ -4,7 +4,7 @@ import (
 	"github.com/xeynse/XeynseJar_analytics/internal/config"
 	"github.com/xeynse/XeynseJar_analytics/internal/entity"
 	"github.com/xeynse/XeynseJar_analytics/internal/entity/home"
-	db "github.com/xeynse/XeynseJar_analytics/internal/resource/db/homeconfig"
+	db "github.com/xeynse/XeynseJar_analytics/internal/resource/db/dynamo"
 )
 
 type resource struct {
